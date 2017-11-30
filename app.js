@@ -74,89 +74,7 @@ app.get('/', function(req, res){
   });
 });
 
-app.get('/articles/add', function(req, res){
-  res.render('add_article',{
-    title: 'New Article'
-  });
-});
-
-app.post('/articles/add', function(req, res){
-
-  req.checkBody('title','Title is required').notEmpty();
-  req.checkBody('author','Author is required').notEmpty();
-  req.checkBody('body','Body is required').notEmpty();
-
-  let errors = req.validationErrors();
-
-  if(errors){
-    res.render('add_article', {
-      errors: errors,
-      title: 'New article'
-    });
-  }else{
-    let article = new Article();
-    article.title = req.body.title;
-    article.author = req.body.author;
-    article.body = req.body.body;
-
-    article.save(function(err){
-      if(err){
-        console.log(err);
-        return;
-      }
-      else{
-        req.flash('success','Article Added');
-        res.redirect('/');
-      }
-    });
-  }
-
-
-});
-
-app.get('/article/:id', function(req, res){
-  Article.findById(req.params.id, function(err, article){
-    res.render('article', {
-      title: article.title,
-      article: article
-    });
-    return;
-  });
-});
-
-// Edit article
-app.get('/article/edit/:id', function(req, res){
-  Article.findById(req.params.id, function(err, article){
-    res.render('edit_article', {
-      title: 'Edit:' + article.title,
-      article: article
-    });
-    return;
-  });
-});
-
-app.post('/article/edit/:id', function(req, res){
-  let article = {};
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body = req.body.body;
-
-  let query = {_id:req.params.id}
-
-  Article.update(query, article,function(err){
-    if(err){
-      console.log(err);
-    }
-    else{
-      req.flash('success','Article updated');
-      res.redirect('/');
-    }
-  });
-  return;
-});
-
-// Delete article
-app.delete('/article/:id', function (req, res) {
+app.delete('/articles/:id', function (req, res) {
   let query = {_id:req.params.id}
     Article.remove(query, function(err) {
         if (err) return res.status(500).send("There was a problem deleting the article.");
@@ -164,6 +82,9 @@ app.delete('/article/:id', function (req, res) {
     });
 });
 
+// route file
+let articles = require('./routes/articles');
+app.use('/articles', articles);
 // Start a node server
 app.listen(3000, function(){
   console.log('Server started on port 3000');
