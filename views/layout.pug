@@ -23,6 +23,10 @@ html
             li
               a(href='#') Page 3
     .container
+      != messages('message',locals)
+      if errors
+        each error, i in errors
+          div(class='alert alert-danger') #{error.msg}
       block content
       br
       hr
@@ -30,4 +34,5 @@ html
         p Copyright &copy; 2017
     script(src='/bower_components/jquery/dist/jquery.js')
     script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
+    script(src='/js/application.js')
     
